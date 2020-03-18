@@ -22,7 +22,7 @@ pipeline {
                                 Marius.Nicolae@microchip.com, \
                                 Cristian.Pop@microchip.com, \
                                 shaima.husain@microchip.com, \
-                                prasad.aradhya@microchip.com, \
+                                prasad.aradhya@microchip.com', 
                 description: "Email to send build failure, fixed and successful deployment notifications.")
     }
 	
