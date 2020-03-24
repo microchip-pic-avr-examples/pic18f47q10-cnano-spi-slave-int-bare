@@ -71,6 +71,10 @@ static void PORT_init(void)
     TRISC |= _TRISC_TRISC4_MASK;            /* SDI channel as input */
     TRISC &= ~_TRISC_TRISC5_MASK;           /* SDO channel as output */
     TRISA |= _TRISA_TRISA5_MASK;            /* SS channel as input */
+    
+    ANSELA &= ~_ANSELA_ANSELA5_MASK;        /* Set RA5 as digital */
+    ANSELC = ~_ANSELC_ANSELC3_MASK 
+           & ~_ANSELC_ANSELC4_MASK;         /* Set RC3 and RC4 pins as digital */
 }
 
 static void SPI1_init(void)
