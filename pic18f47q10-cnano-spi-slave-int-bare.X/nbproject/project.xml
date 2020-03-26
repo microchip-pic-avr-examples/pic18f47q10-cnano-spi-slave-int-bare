@@ -3,7 +3,7 @@
     <type>com.microchip.mplab.nbide.embedded.makeproject</type>
     <configuration>
         <data xmlns="http://www.netbeans.org/ns/make-project/1">
-            <name>pic18f47q10-cnano-spi-slave-exchange-interrupt-bare</name>
+            <name>pic18f47q10-cnano-spi-slave-int-bare</name>
             <creation-uuid>14177041-59c1-4e14-8233-b020f2cc26c2</creation-uuid>
             <make-project-type>0</make-project-type>
             <c-extensions>c</c-extensions>
