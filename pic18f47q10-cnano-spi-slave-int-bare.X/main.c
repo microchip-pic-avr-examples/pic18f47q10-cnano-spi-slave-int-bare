@@ -30,108 +30,102 @@
 #include <xc.h>
 #include <stdint.h>
 
-#define PPS_CONFIG_RA5_SPI_SS       0x05
-#define PPS_CONFIG_RC3_SPI_SCK      0x0F
-#define PPS_CONFIG_RC4_SPI_SDI      0x14
-#define PPS_CONFIG_RC5_SPI_SDO      0x10
-
-static void CLK_init(void);
-static void PPS_init(void);
-static void PORT_init(void);
-static void SPI1_init(void);
-static void INTERRUPT_init(void);
+static void CLK_Initialize(void);
+static void PPS_Initialize(void);
+static void PORT_Initialize(void);
+static void SPI1_Initialize(void);
+static void INTERRUPT_Initialize(void);
 static uint8_t SPI1_exchangeByte(uint8_t data);
-static void MSSP1_interruptHandler(void);
+static void MSSP1_InterruptHandler(void);
 
 volatile uint8_t receiveData;        /* Data that will be received */
 volatile uint8_t writeData = 1;      /* Data that will be transmitted */
 
-static void CLK_init(void)
+static void CLK_Initialize(void)
 {
-    OSCCON1 = _OSCCON1_NOSC1_MASK
-            | _OSCCON1_NOSC2_MASK;              /* HFINTOSC Oscillator */
+    OSCCON1 = 0x60;        /* HFINTOSC Oscillator */
     
-    OSCFRQ = _OSCFRQ_FRQ1_MASK;                 /* HFFRQ 4 MHz */
+    OSCFRQ = 0x02;         /* HFFRQ 4 MHz */
 }
 
-static void PPS_init(void)
+static void PPS_Initialize(void)
 {
-    SSP1SSPPS = PPS_CONFIG_RA5_SPI_SS;             /* SS channel on RA5 */
+    SSP1SSPPS = 0x05;             /* SS channel on RA5 */
     
-    RC3PPS = PPS_CONFIG_RC3_SPI_SCK;               /* SCK channel on RC3 */
+    RC3PPS = 0x0F;               /* SCK channel on RC3 */
  
-    SSP1DATPPS = PPS_CONFIG_RC4_SPI_SDI;           /* SDI channel on RC4 */
+    SSP1DATPPS = 0x14;           /* SDI channel on RC4 */
     
-    RC5PPS = PPS_CONFIG_RC5_SPI_SDO;               /* SDO channel on RC5 */
+    RC5PPS = 0x10;               /* SDO channel on RC5 */
 }
 
-static void PORT_init(void)
+static void PORT_Initialize(void)
 {
-    TRISC |= _TRISC_TRISC3_MASK;            /* SCK channel as input */
-    TRISC |= _TRISC_TRISC4_MASK;            /* SDI channel as input */
-    TRISC &= ~_TRISC_TRISC5_MASK;           /* SDO channel as output */
-    TRISA |= _TRISA_TRISA5_MASK;            /* SS channel as input */
+    /* SDO as output; SDI, SCK as input */
+    TRISC = 0xDF;
     
-    ANSELA &= ~_ANSELA_ANSELA5_MASK;        /* Set RA5 as digital */
-    ANSELC = ~_ANSELC_ANSELC3_MASK 
-           & ~_ANSELC_ANSELC4_MASK;         /* Set RC3 and RC4 pins as digital */
+    /* SS as digital pin */
+    ANSELA = 0xDF;  
+    
+    /* SCK, SDI, SDO as digital pins */
+    ANSELC = 0xC7;         
 }
 
-static void SPI1_init(void)
+static void SPI1_Initialize(void)
 {
     /* Enable module, SPI Slave Mode */
-    SSP1CON1 = _SSP1CON1_SSPEN_MASK
-             | _SSP1CON1_SSPM2_MASK;         
+    SSP1CON1 = 0x24;        
     
     /* Enable MSSP interrupts */
-    PIE3 |= _PIE3_SSPIE_MASK;               
+    PIE3bits.SSP1IE = 1;               
 }
 
-static void INTERRUPT_init(void)
+static void INTERRUPT_Initialize(void)
 {
-    INTCON = _INTCON_GIE_MASK               /* Enable Global Interrupts */
-           | _INTCON_PEIE_MASK;             /* Enable Peripheral interrupts */
+    INTCONbits.GIE = 1;              /* Enable Global Interrupts */
+    INTCONbits.PEIE = 1;             /* Enable Peripheral interrupts */
 }
 
 static uint8_t SPI1_exchangeByte(uint8_t data)
 {
     SSP1BUF = data;
-
-    /* Wait until the end of transmission */
-    while(!(PIR3 & _PIR3_SSP1IF_MASK))      
+    
+    while(!PIR3bits.SSP1IF) /* Wait until data is exchanged */
     {
         ;
-    }
-
-    /* Clear the flag */
-    PIR3 &= ~_PIR3_SSP1IF_MASK;             
-
+    }   
+    PIR3bits.SSP1IF = 0;
+    
     return SSP1BUF;  
 }
 
-static void MSSP1_interruptHandler(void)
+static void MSSP1_InterruptHandler(void)
 {
     receiveData = SPI1_exchangeByte(writeData);
 }
 
 void __interrupt() INTERRUPT_InterruptManager(void)
 {
-    if(INTCON & _INTCON_PEIE_MASK)
+    if(INTCONbits.PEIE == 1)
     {
-        if((PIE3 & _PIE3_SSP1IE_MASK) && (PIR3 & _PIR3_SSP1IF_MASK))
+        if(PIE3bits.BCL1IE == 1 && PIR3bits.BCL1IF == 1)
         {
-            MSSP1_interruptHandler();
-        }
+            MSSP1_InterruptHandler();
+        } 
+        else if(PIE3bits.SSP1IE == 1 && PIR3bits.SSP1IF == 1)
+        {
+            MSSP1_InterruptHandler();
+        } 
     }
 }
 
 int main(void)
 {
-    CLK_init();
-    PPS_init();
-    PORT_init();
-    SPI1_init();
-    INTERRUPT_init();
+    CLK_Initialize();
+    PPS_Initialize();
+    PORT_Initialize();
+    SPI1_Initialize();
+    INTERRUPT_Initialize();
     
     while(1)
     {
