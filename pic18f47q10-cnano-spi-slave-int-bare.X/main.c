@@ -45,7 +45,7 @@ static void CLK_Initialize(void)
 {
     OSCCON1bits.NOSC = 6;        /* HFINTOSC Oscillator */
     
-    OSCFRQbits.HFFRQ = 2;        /* HFFRQ 4 MHz */
+    OSCFRQbits.HFFRQ = 8;        /* HFFRQ 64 MHz */
 }
 
 static void PPS_Initialize(void)
