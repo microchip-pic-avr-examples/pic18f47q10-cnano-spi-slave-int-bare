@@ -7,7 +7,7 @@
         "version": "1.0.3",
         "displayName": "PIC18F47Q10 Exchanging Data as a Slave SPI Device Using Interrupts",
         "projectName": "pic18f47q10-cnano-spi-slave-int-mcc",
-        "shortDescription": "In this demo, the SPI will be configured as slave and it will be used to exchange data. The data transfer is triggered by interrupts.",
+        "shortDescription": "In this demo, the SPI is configured as slave and it is used to exchange data. The data transfer is triggered by interrupts.",
         "ide": {
             "name": "MPLAB X",
             "semverRange": ">=5.30.0"
@@ -49,7 +49,7 @@
         "keywords": [
             "SPI",
             "Data Transfer",
-            "Serial Communications",
+            "Serial Communication",
             "Receive",
             "Interrupts",
             "Bare Metal"
