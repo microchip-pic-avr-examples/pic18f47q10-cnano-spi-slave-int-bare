@@ -5,7 +5,7 @@
         "metaDataVersion": "1.1.0",
         "name": "com.microchip.mcu8.mplabx.project.pic18f47q10-cnano-spi-slave-int-mcc",
         "version": "1.0.3",
-        "displayName": "PIC18F47Q10 Exchanging Data as a Slave SPI Device Using Interrupts",
+        "displayName": "Exchanging Data as an SPI Device Using Interrupts",
         "projectName": "pic18f47q10-cnano-spi-slave-int-mcc",
         "shortDescription": "In this demo, the SPI is configured as slave and it is used to exchange data. The data transfer is triggered by interrupts.",
         "ide": {
